@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>CilokKu</title>
+
+<style>
+/* BODY (BIAR BISA SCROLL + TIDAK KETUTUP) */
+body{
+    margin:0;
+    font-family:sans-serif;
+    background:#f2f2f2;
+    padding-bottom:260px; /* 🔥 penting biar tidak ketutup cart */
+}
+
+/* HEADER */
+.header{
+    background:#00a859;
+    color:white;
+    padding:15px;
+    text-align:center;
+}
+
+/* GRID PRODUK */
+.container{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    padding:10px;
+}
+
+/* CARD */
+.card{
+    background:white;
+    padding:10px;
+    border-radius:12px;
+    box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* GAMBAR */
+.card img{
+    width:100%;
+    height:110px;
+    object-fit:cover;
+    border-radius:10px;
+}
+
+/* INPUT */
+input{
+    width:100%;
+    margin-top:5px;
+    padding:6px;
+    border:1px solid #ddd;
+    border-radius:6px;
+}
+
+/* BUTTON */
+button{
+    width:100%;
+    padding:7px;
+    border:none;
+    border-radius:8px;
+}
+
+.add{
+    background:#00a859;
+    color:white;
+}
+
+.red{
+    background:red;
+    color:white;
+}
+
+/* CART FIX */
+.cart{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    background:white;
+    border-top:2px solid #ccc;
+    padding:10px;
+
+    max-height:32vh; /* 🔥 kecilkan biar tidak nutup tombol */
+    overflow:auto;
+    z-index:999;
+    box-shadow:0 -3px 10px rgba(0,0,0,0.2);
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="header">🍢 CilokKu Store</div>
+
+<!-- PRODUK -->
+<div class="container">
+
+<div class="card">
+<img src="images/kacang.jpg" width="100%" alt="Cilok Kacang">
+    <b>Cilok Kacang</b><br>
+    Rp 500
+
+    <input id="q1" type="number" value="1">
+    <input id="c1" placeholder="catatan">
+
+    <button class="add" onclick="add('Cilok Kacang',500,q1.value,c1.value)">
+        Tambah
+    </button>
+</div>
+
+<div class="card">
+<img src="images/saus tiram.jpeg" width="100%" alt="Cilok Tiramr">
+    <b>Cilok Tiram</b><br>
+    Rp 500
+
+    <input id="q2" type="number" value="1">
+    <input id="c2" placeholder="catatan">
+
+    <button class="add" onclick="add('Cilok Tiram',500,q2.value,c2.value)">
+        Tambah
+    </button>
+</div>
+
+<div class="card">
+<img src="images/ayam.jpg" width="100%" alt="Cilok Ayam Suwir">
+    <b>Cilok Ayam Suwir</b><br>
+    Rp 500
+
+    <input id="q3" type="number" value="1">
+    <input id="c3" placeholder="catatan">
+
+    <button class="add" onclick="add('Cilok Suwir',500,q3.value,c3.value)">
+        Tambah
+    </button>
+</div>
+
+<div class="card">
+<img src="images/es.jpeg" width="100%" alt="Es Teler">
+    <b>Es Teler</b><br>
+    Rp 5000
+
+    <input id="q4" type="number" value="1">
+    <input id="c4" placeholder="catatan">
+
+    <button class="add" onclick="add('Es Teler',5000,q4.value,c4.value)">
+        Tambah
+    </button>
+</div>
+
+</div>
+
+<!-- CART -->
+<div class="cart">
+    <h3>Keranjang</h3>
+
+    <div id="list"></div>
+    <b id="total">Total: 0</b>
+
+    <br><br>
+
+    <button class="add" onclick="checkout()">Checkout</button>
+    <button class="red" onclick="clearCart()">Hapus Semua</button>
+</div>
+
+<script>
+let cart = [];
+
+/* ADD */
+function add(nama,harga,qty,catatan){
+    cart.push({
+        nama:nama,
+        harga:harga,
+        qty:parseInt(qty),
+        catatan:catatan || "-"
+    });
+    render();
+}
+
+/* RENDER */
+function render(){
+    let html = "";
+    let total = 0;
+
+    cart.forEach((c,i)=>{
+        let sub = c.harga * c.qty;
+        total += sub;
+
+        html += `
+        <div>
+            <b>${c.nama}</b> x${c.qty} = Rp ${sub}<br>
+            📝 ${c.catatan}
+            <button onclick="hapus(${i})">X</button>
+        </div><hr>`;
+    });
+
+    document.getElementById("list").innerHTML = html;
+    document.getElementById("total").innerText = "Total: Rp " + total;
+}
+
+/* HAPUS */
+function hapus(i){
+    cart.splice(i,1);
+    render();
+}
+
+/* CLEAR */
+function clearCart(){
+    cart = [];
+    render();
+}
+
+/* CHECKOUT KE ADMIN */
+function checkout(){
+    let orders = JSON.parse(localStorage.getItem("orders")) || [];
+
+    let detail = "";
+    let total = 0;
+
+    cart.forEach(c=>{
+        let sub = c.harga * c.qty;
+        total += sub;
+
+        detail += `${c.nama} x${c.qty} = Rp ${sub}
+Catatan: ${c.catatan}
+
+`;
+    });
+
+    orders.push({
+        waktu:new Date().toLocaleString(),
+        detail:detail,
+        total:total
+    });
+
+    localStorage.setItem("orders",JSON.stringify(orders));
+
+    alert("Hatur Nuhun Atos Sumping!");
+
+    cart = [];
+    render();
+}
+</script>
+
+</body>
+</html>

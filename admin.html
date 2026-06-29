@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin CilokKu</title>
+
+<style>
+body{
+    margin:0;
+    font-family:sans-serif;
+    background:#111;
+    color:white;
+}
+
+.box{
+    width:80%;
+    margin:60px auto;
+    background:#222;
+    padding:20px;
+    border-radius:10px;
+}
+
+input{
+    width:100%;
+    padding:10px;
+    margin:8px 0;
+}
+
+button{
+    width:100%;
+    padding:10px;
+    border:none;
+    border-radius:8px;
+    background:#00a859;
+    color:white;
+}
+
+.card{
+    background:white;
+    color:black;
+    margin:10px;
+    padding:10px;
+    border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box" id="loginBox">
+    <h2>Admin Login</h2>
+    <input id="u" placeholder="username">
+    <input id="p" type="password" placeholder="password">
+    <button onclick="login()">Masuk</button>
+</div>
+
+<div id="panel" style="display:none;">
+    <h3 style="padding:10px;">📦 Pesanan</h3>
+    <div id="list"></div>
+</div>
+
+<script>
+let orders = JSON.parse(localStorage.getItem("orders")) || [];
+
+function login(){
+    let u = document.getElementById("u").value;
+    let p = document.getElementById("p").value;
+
+    if(u==="asep ganteng" && p==="110227"){
+        document.getElementById("loginBox").style.display="none";
+        document.getElementById("panel").style.display="block";
+        render();
+    }else{
+        alert("Login salah");
+    }
+}
+
+function render(){
+    let html = "";
+
+    orders.forEach((o,i)=>{
+        html += `
+        <div class="card">
+            <b>${o.waktu}</b><br><br>
+            <pre>${o.detail}</pre>
+            <b>Total: Rp ${o.total}</b><br><br>
+            <button onclick="hapus(${i})" style="background:red;">Hapus</button>
+        </div>`;
+    });
+
+    document.getElementById("list").innerHTML = html;
+}
+
+function hapus(i){
+    orders.splice(i,1);
+    localStorage.setItem("orders",JSON.stringify(orders));
+    render();
+}
+</script>
+
+</body>
+</html>
